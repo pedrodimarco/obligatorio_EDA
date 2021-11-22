@@ -11,8 +11,6 @@
 using namespace std;
 
 struct nodo_editor{
-	/* aquí deben figurar los campos/estructuras que usted considere necesarios
-	para implementar el editor. Ej: texto, diccionario, etc*/
 	texto t;
 	arbol d;
 };
@@ -44,7 +42,6 @@ struct nodo_arbol{
 editor CrearEditor(){
 	// Crea la estructura editor.
 	editor e = new(nodo_editor);
-	// crear el resto de las estructuras que se incluyan en el editor
 	texto tex = new(nodo_texto);
 
 	e->t = tex;
@@ -78,9 +75,6 @@ palabra CrearPalabra(){
 
 TipoRetorno InsertarLinea(editor &e){
 	// Inserta una nueva línea vacía al final del texto.
-	// Este requerimiento debe ser resuelto en O(1) peor caso.
-	// Ver más detalles en la letra del obligatorio.
-
 	linea nuevaLinea = CrearLinea();
 
 	e->t->l = e->t->primeraLinea; //Me aseguro que siempre apunto a la primera linea
@@ -102,7 +96,6 @@ TipoRetorno InsertarLinea(editor &e){
 
 TipoRetorno BorrarLinea(editor &e, Posicion posicionLinea){
 	// Borra la línea en la posición indicada.
-	// Ver más detalles en la letra del obligatorio.
 	if ((posicionLinea >= 1) && (posicionLinea <= e->t->cantLineas)){
 		int cont = 1;
 		// editor aux = CrearEditor();
@@ -130,7 +123,6 @@ TipoRetorno BorrarLinea(editor &e, Posicion posicionLinea){
 
 TipoRetorno BorrarTodo(editor &e){
 	// Borra todas las líneas del texto.
-	// Ver más detalles en la letra del obligatorio.
 	if (e->t->cantLineas == 0)
 		return OK;
 	else{
@@ -146,7 +138,6 @@ TipoRetorno BorrarTodo(editor &e){
 
 TipoRetorno BorrarOcurrenciasPalabraEnTexto(editor &e, Cadena palabraABorrar){
 	// Borra todas las ocurrencias de una palabra en el texto.
-	// Ver más detalles en la letra del obligatorio.
 	linea aux = e->t->l;
 	palabra ant = NULL, iter = e->t->l->primera;
 	if (aux != NULL){
@@ -171,7 +162,7 @@ TipoRetorno BorrarOcurrenciasPalabraEnTexto(editor &e, Cadena palabraABorrar){
 				}
 
 				ant = iter;
-				iter = ant->sig; // ESTO SE PUEDE HACER?
+				iter = ant->sig;
 			}
 
 			aux = aux->sig;
@@ -251,33 +242,6 @@ TipoRetorno ImprimirLinea(editor &e, Posicion posicionLinea){
 	}
 	else
 		return ERROR;
-	// if (e->t->l != NULL){
-	// 	linea auxiliar = new(nodo_linea);
-	// 	auxiliar = e->t->l;
-	// 	Posicion contPosicion = 0, linea = 0;
-	// 	palabra p = new(nodo_palabra);
-
-	// 	while (contPosicion != posicionLinea){
-	// 		contPosicion++;
-	// 		auxiliar = auxiliar->sig;
-	// 	}
-	// 	p = auxiliar->primera;
-	// 	if (p != NULL){
-	// 		while (p->sig != NULL){
-	// 			linea++;
-	// 			printf("%d:", linea);
-	// 			printf(" %s", p->word);
-	// 		}
-	// 		return OK;
-	// 	}
-	// 	else if (p == NULL){
-	// 		return ERROR;
-	// 	}
-	// }
-	// else if (e->t->l == NULL){
-	// 	return ERROR;
-	// }
-	// return OK;
 }
 
 TipoRetorno ImprimirTexto(editor &e){
@@ -316,13 +280,11 @@ TipoRetorno ImprimirTexto(editor &e){
 
 TipoRetorno ComprimirTexto(editor &e){
 	// Comprime las palabras del texto. Para implementar esta operación no debe generarse un nuevo documento.
-	// Ver más detalles en la letra del obligatorio.
 	return NO_IMPLEMENTADA;
 }
 
 TipoRetorno InsertarPalabra(editor & e, Posicion posicionLinea, Posicion posicionPalabra, Cadena palabraAIngresar){
 // Inserta una palabra en una línea.
-// Ver más detalles en la letra del obligatorio.
 	if(((posicionLinea <= e->t->cantLineas) && (posicionLinea > 0))) { //Chequeo de poisicionLinea valido.
 
 		Posicion cont = 1;
@@ -420,7 +382,6 @@ TipoRetorno BorrarPalabra(editor & e, Posicion posicionLinea, Posicion posicionP
 
 TipoRetorno BorrarOcurrenciasPalabraEnLinea(editor &e, Posicion posicionLinea, Cadena palabraABorrar){
 	// Borra todas las ocurrencias de una palabra en la línea indicada.
-	// Ver más detalles en la letra del obligatorio.
 	return NO_IMPLEMENTADA;
 }
 
@@ -456,9 +417,6 @@ TipoRetorno agregar(arbol &d, Cadena palabraAIngresar) {
 
 TipoRetorno IngresarPalabraDiccionario(editor &e, Cadena palabraAIngresar){
 	// Agrega una palabra al diccionario.
-	// Esta operación debe realizarse en a lo sumo O(log n) promedio.
-	// Ver más detalles en la letra del obligatorio.
-
 	if(e->d == NULL){
 		arbol nodoD = new(nodo_arbol);
 		Cadena w = new(char[256]);
@@ -477,7 +435,6 @@ TipoRetorno IngresarPalabraDiccionario(editor &e, Cadena palabraAIngresar){
 
 TipoRetorno BorrarPalabraDiccionario(editor &e, Cadena palabraABorrar){
 	// Borra una palabra del diccionario.
-	// Ver más detalles en la letra del obligatorio.
 	return NO_IMPLEMENTADA;
 }
 
@@ -499,13 +456,11 @@ TipoRetorno mostrarArbol(arbol d){
 
 TipoRetorno ImprimirTextoIncorrecto(editor &e){
 	// Muestra las palabras del texto que no se encuentran en el diccionario.
-	// Ver más detalles en la letra del obligatorio.
 	return NO_IMPLEMENTADA;
 }
 
 TipoRetorno ImprimirUltimasPalabras(editor &e){
 	// Imprime las últimas MAX_CANT_ULTIMAS_PALABRAS palabras ingresadas al texto.
-	// Ver más detalles en la letra del obligatorio.
 	return NO_IMPLEMENTADA;
 }
 
