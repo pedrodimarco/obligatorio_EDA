@@ -27,28 +27,31 @@ editor CrearEditor();
 linea CrearLinea();
 //Crea la estructura linea.
 
-TipoRetorno InsertarLinea(editor & e); // Pedro 
+palabra CrearPalabra();
+//Crea la estructura palabra.
+
+TipoRetorno InsertarLinea(editor & e); 
 // Inserta una nueva línea vacía al final del texto.
 // Este requerimiento debe ser resuelto en O(1) peor caso.
 // Ver más detalles en la letra del obligatorio.
 
-TipoRetorno InsertarLineaEnPosicion(editor & e, Posicion posicionLinea); // Bruno
+TipoRetorno InsertarLineaEnPosicion(editor & e, Posicion posicionLinea);
 // Inserta una nueva línea vacía en la posición indicada.
 // Ver más detalles en la letra del obligatorio.
 
-TipoRetorno BorrarLinea(editor & e, Posicion posicionLinea); // Mathias
+TipoRetorno BorrarLinea(editor & e, Posicion posicionLinea);
 // Borra la línea en la posición indicada.
 // Ver más detalles en la letra del obligatorio.
 
-TipoRetorno BorrarTodo(editor & e); //Pedro
+TipoRetorno BorrarTodo(editor & e);
 // Borra todas las líneas del texto.
 // Ver más detalles en la letra del obligatorio.
 
-TipoRetorno BorrarOcurrenciasPalabraEnTexto(editor & e, Cadena palabraABorrar); // Mathias
+TipoRetorno BorrarOcurrenciasPalabraEnTexto(editor & e, Cadena palabraABorrar);
 // Borra todas las ocurrencias de una palabra en el texto.
 // Ver más detalles en la letra del obligatorio.
 
-TipoRetorno ImprimirTexto(editor & e);// Pedro
+TipoRetorno ImprimirTexto(editor & e);
 // Imprime el texto por pantalla.
 // Ver más detalles en la letra del obligatorio.
 
@@ -56,19 +59,19 @@ TipoRetorno ComprimirTexto(editor & e);
 // Comprime las palabras del texto. Para implementar esta operación no debe generarse un nuevo documento.
 // Ver más detalles en la letra del obligatorio.
 
-TipoRetorno InsertarPalabra(editor & e, Posicion posicionLinea, Posicion posicionPalabra, Cadena palabraAIngresar); //Bruno
+TipoRetorno InsertarPalabra(editor & e, Posicion posicionLinea, Posicion posicionPalabra, Cadena palabraAIngresar);
 // Inserta una palabra en una línea.
 // Ver más detalles en la letra del obligatorio.
 
-TipoRetorno BorrarPalabra(editor & e, Posicion posicionLinea, Posicion posicionPalabra); //Mathias
+TipoRetorno BorrarPalabra(editor & e, Posicion posicionLinea, Posicion posicionPalabra);
 // Borra la palabra en la posición indicada.
 // Ver más detalles en la letra del obligatorio.
 
-TipoRetorno BorrarOcurrenciasPalabraEnLinea(editor & e, Posicion posicionLinea, Cadena palabraABorrar); //Pedro
+TipoRetorno BorrarOcurrenciasPalabraEnLinea(editor & e, Posicion posicionLinea, Cadena palabraABorrar);
 // Borra todas las ocurrencias de una palabra en la línea indicada.
 // Ver más detalles en la letra del obligatorio.
 
-TipoRetorno ImprimirLinea(editor & e, Posicion posicionLinea); //Bruno
+TipoRetorno ImprimirLinea(editor & e, Posicion posicionLinea);
 // Imprime la línea por pantalla.
 // Ver más detalles en la letra del obligatorio.
 
@@ -85,6 +88,7 @@ TipoRetorno ImprimirDiccionario(editor & e);
 // Muestra las palabras del diccionario alfabéticamente.
 // Esta operación debe realizarse en O(n) peor caso.
 // Ver más detalles en la letra del obligatorio.
+TipoRetorno mostrarArbol(arbol a);
 
 TipoRetorno ImprimirTextoIncorrecto(editor & e);
 // Muestra las palabras del texto que no se encuentran en el diccionario.

@@ -14,10 +14,11 @@ struct nodo_editor{
 	/* aquí deben figurar los campos/estructuras que usted considere necesarios
 	para implementar el editor. Ej: texto, diccionario, etc*/
 	texto t;
+	arbol d;
 };
 
 struct nodo_texto{
-	linea primeraLinea; // puntero apuntando a la primera linea
+	linea primeraLinea; // Puntero apuntando a la primera linea
 	linea l; 
 	int cantLineas;
 };
@@ -42,32 +43,36 @@ struct nodo_arbol{
 
 editor CrearEditor(){
 	// Crea la estructura editor.
-	editor e = new (nodo_editor);
+	editor e = new(nodo_editor);
 	// crear el resto de las estructuras que se incluyan en el editor
-	texto tex = new (nodo_texto);
+	texto tex = new(nodo_texto);
 
 	e->t = tex;
+	e->d = NULL; //Diccionario apunta a NULL en un principio.
 	e->t->cantLineas = 0;
-	e->t->primeraLinea = NULL;
-	e->t->l = NULL;
+	e->t->primeraLinea = NULL; //Puntero a primera linea.
+	e->t->l = NULL; //Puntero a linea.
 
 	return e;
 }
 
 linea CrearLinea(){
-	linea nuevaLinea = new (nodo_linea);
+	linea nuevaLinea = new(nodo_linea);
 
 	nuevaLinea->primera = NULL;
-	nuevaLinea->cantPalabras = 0;
 	nuevaLinea->sig = NULL;
+	nuevaLinea->cantPalabras = 0;
+	
 	return nuevaLinea;
 }
 
 palabra CrearPalabra(){
-	palabra nuevaPalabra = new (nodo_palabra);
+	palabra nuevaPalabra = new(nodo_palabra);
+
 	nuevaPalabra->word = NULL;
 	nuevaPalabra->ant = NULL;
 	nuevaPalabra->sig = NULL;
+
 	return nuevaPalabra;
 }
 
@@ -75,24 +80,10 @@ TipoRetorno InsertarLinea(editor &e){
 	// Inserta una nueva línea vacía al final del texto.
 	// Este requerimiento debe ser resuelto en O(1) peor caso.
 	// Ver más detalles en la letra del obligatorio.
-	editor aux = CrearEditor();
-	aux = e;
 
 	linea nuevaLinea = CrearLinea();
 
-	// if(e->t->cantLineas == 0){
-	// 	e->t->l = nuevaLinea;
-	// 	e->t->cantLineas++;
-	// }
-	// else {
-	// 	while(e->t->l != NULL){
-	// 		e->t->l = e->t->l->sig;
-	// 	}
-
-	// 	e->t->l->sig = nuevaLinea;
-	// 	e->t->cantLineas++;
-	// }
-	e->t->l = e->t->primeraLinea;
+	e->t->l = e->t->primeraLinea; //Me aseguro que siempre apunto a la primera linea
 
 	if (e->t->l != NULL){
 		while (e->t->l->sig != NULL){
@@ -113,19 +104,20 @@ TipoRetorno BorrarLinea(editor &e, Posicion posicionLinea){
 	// Borra la línea en la posición indicada.
 	// Ver más detalles en la letra del obligatorio.
 	if ((posicionLinea >= 1) && (posicionLinea <= e->t->cantLineas)){
-		Posicion cont = 1;
-		editor aux = CrearEditor();
+		int cont = 1;
+		// editor aux = CrearEditor();
+		linea auxiliar = CrearLinea();
 
 		while (cont != posicionLinea - 1) {
 			cont++;
 			e->t->l = e->t->l->sig;
 		}
 
-		aux->t->l = e->t->l->sig;
+		auxiliar = e->t->l->sig;
 		// Engancho la linea anterior con la línea siguiente (respecto a la linea a ser borrada)
-		e->t->l->sig = aux->t->l->sig;
+		e->t->l->sig = auxiliar->sig;
 
-		delete (aux->t->l);
+		delete (auxiliar);
 
 		e->t->cantLineas--;
 
@@ -136,43 +128,6 @@ TipoRetorno BorrarLinea(editor &e, Posicion posicionLinea){
 	}
 }
 
-TipoRetorno BorrarLinea2(editor &e, Posicion posicionLinea){
-
-	linea iter = e->t->l, ant = NULL;
-	Posicion contPosicion = 0;
-
-	while (contPosicion != posicionLinea){
-		contPosicion++;
-		ant = iter;
-		iter = iter->sig;
-	}
-
-	if (ant == NULL) { // SOY EL PRIMERO
-		ant = iter;
-		delete iter;
-		iter = ant->sig;
-
-		while (iter != NULL){
-			ant = iter;
-			iter = iter->sig;
-			ant->cantPalabras--; // PUEDE ESTAR MAL LA SINTAXIS
-		}
-	}
-
-	else{ // NO SOY EL PRIMERO
-		iter = iter->sig;
-		delete ant->sig;
-		ant->sig = iter;
-
-		while (iter != NULL){
-			ant = iter;
-			iter = iter->sig;
-			ant->cantPalabras--;
-		}
-	}
-	return NO_IMPLEMENTADA;
-}
-
 TipoRetorno BorrarTodo(editor &e){
 	// Borra todas las líneas del texto.
 	// Ver más detalles en la letra del obligatorio.
@@ -180,8 +135,7 @@ TipoRetorno BorrarTodo(editor &e){
 		return OK;
 	else{
 		int cont;
-		for (cont = 1; cont <= e->t->cantLineas; cont++)
-		{
+		for (cont = 1; cont <= e->t->cantLineas; cont++){
 			BorrarLinea(e, cont);
 		}
 		e->t->cantLineas = 0;
@@ -279,64 +233,51 @@ TipoRetorno InsertarLineaEnPosicion2(editor &e, Posicion posicionLinea){
 	return OK;
 }
 
-TipoRetorno InsertarPalabra(editor &e, Posicion posicionLinea, Posicion posicionPalabra, Cadena palabraAIngresar){
-	if (e->t->l != NULL){
-		linea auxiliar;
-		auxiliar = e->t->l;
-		Posicion contPosicion = 0, contPosicionPalabra = 0;
-		palabra p;
-		while (contPosicion != posicionLinea){
-			contPosicion++;
-			auxiliar = auxiliar->sig;
-		}
-		p = auxiliar->primera;
-		if (p != NULL){
-			palabra nuevaPalabra, panterior, pauxiliar;
-			nuevaPalabra = CrearPalabra();
-			panterior = NULL;
-			pauxiliar = p;
-
-			while (contPosicionPalabra != posicionPalabra){
-				contPosicionPalabra++;
-				panterior = pauxiliar;
-				pauxiliar = pauxiliar->sig;
-			}
-			panterior->sig = nuevaPalabra;
-			nuevaPalabra->word = palabraAIngresar;
-			nuevaPalabra->ant = panterior;
-			nuevaPalabra->sig = pauxiliar;
-			pauxiliar->ant = nuevaPalabra;
-		}
-	}
-	return OK;
-}
-
 TipoRetorno ImprimirLinea(editor &e, Posicion posicionLinea){
-	if (e->t->l != NULL){
-		linea auxiliar = e->t->l;
-		Posicion contPosicion = 0, linea = 0;
-		palabra p;
-		while (contPosicion != posicionLinea){
-			contPosicion++;
-			auxiliar = auxiliar->sig;
+	if(((posicionLinea <= e->t->cantLineas) && (posicionLinea > 0))){
+		Posicion cont = 1;
+
+		e->t->l = e->t->primeraLinea;
+
+		while(cont != posicionLinea){ //Encuentro la linea correspondiente.
+			cont++;
+			e->t->l = e->t->l->sig;
 		}
-		p = auxiliar->primera;
-		if (p != NULL){
-			while (p->sig != NULL){
-				linea++;
-				printf("%d:", linea);
-				printf(" %s", p->word);
-			}
-			return OK;
+		while(e->t->l->primera->sig != NULL){
+			cout << cont << ": " << e->t->l->primera->word << " ";
+			e->t->l->primera = e->t->l->primera->sig;
 		}
-		else if (p == NULL){
-			return ERROR;
-		}
+		return OK;
 	}
-	else if (e->t->l == NULL){
+	else
 		return ERROR;
-	}
-	return OK;
+	// if (e->t->l != NULL){
+	// 	linea auxiliar = new(nodo_linea);
+	// 	auxiliar = e->t->l;
+	// 	Posicion contPosicion = 0, linea = 0;
+	// 	palabra p = new(nodo_palabra);
+
+	// 	while (contPosicion != posicionLinea){
+	// 		contPosicion++;
+	// 		auxiliar = auxiliar->sig;
+	// 	}
+	// 	p = auxiliar->primera;
+	// 	if (p != NULL){
+	// 		while (p->sig != NULL){
+	// 			linea++;
+	// 			printf("%d:", linea);
+	// 			printf(" %s", p->word);
+	// 		}
+	// 		return OK;
+	// 	}
+	// 	else if (p == NULL){
+	// 		return ERROR;
+	// 	}
+	// }
+	// else if (e->t->l == NULL){
+	// 	return ERROR;
+	// }
+	// return OK;
 }
 
 TipoRetorno ImprimirTexto(editor &e){
@@ -347,19 +288,27 @@ TipoRetorno ImprimirTexto(editor &e){
 	}
 	else{
 		int cont = 1;
-		e->t->l = e->t->primeraLinea;
+		e->t->l = e->t->primeraLinea; //Me aseguro de apuntar a la 1er linea.
+
 		while (e->t->l->sig != NULL){
-			if (e->t->l->cantPalabras == 0)
+			if (e->t->l->cantPalabras == 0){ 
 				cout << cont << ": \n";
+			}
 			else{
 				while (e->t->l->primera->sig != NULL){
 					cout << cont << ": " << e->t->l->primera->word << " ";
 					e->t->l->primera = e->t->l->primera->sig;
 				}
+				if(e->t->l->primera->sig == NULL){
+					cout << cont << ": " << e->t->l->primera->word << " ";
+				}
 				cout << "\n";
 			}
 			e->t->l = e->t->l->sig;
 			cont++;
+		}
+		if (e->t->l->sig == NULL){
+			cout << cont << ": \n";
 		}
 		return OK;
 	}
@@ -370,42 +319,103 @@ TipoRetorno ComprimirTexto(editor &e){
 	// Ver más detalles en la letra del obligatorio.
 	return NO_IMPLEMENTADA;
 }
-/*
+
 TipoRetorno InsertarPalabra(editor & e, Posicion posicionLinea, Posicion posicionPalabra, Cadena palabraAIngresar){
 // Inserta una palabra en una línea.
 // Ver más detalles en la letra del obligatorio.
-	if(((posicionLinea <= e->t->cantLineas) && (posicionLinea > 0))) {
+	if(((posicionLinea <= e->t->cantLineas) && (posicionLinea > 0))) { //Chequeo de poisicionLinea valido.
 
-		int cont = 1;
-
+		Posicion cont = 1;
+		e->t->l = e->t->primeraLinea; //Me aseguro de apuntar a la 1era linea.
+		
 		while(cont != posicionLinea) { //"entro" a la linea que corresponde.
 			e->t->l = e->t->l->sig;
 			cont++;
 		}
 
-		if((posicionPalabra >= 1) && (posicionPalabra <= e->t->l->cantPalabras + 1) && (posicionPalabra <= MAX_CANT_PALABRAS_X_LINEA)) {
+		if((posicionPalabra >= 1) && (posicionPalabra <= e->t->l->cantPalabras + 1) 
+			&& (posicionPalabra <= MAX_CANT_PALABRAS_X_LINEA)) {
+			Posicion cont2 = 1;
+
+			while(cont2 != posicionPalabra) { //"entro" al nodo palabra correspondiente.
+				e->t->l->primera = e->t->l->primera->sig;
+				cont2++;
+			}
 
 			Cadena word = new(char[256]);
 			strcpy(word, palabraAIngresar); //Copio el string en la variable que pedí memoria.
 
-
-
+			palabra nuevaPalabra = new(nodo_palabra);
+			nuevaPalabra->word = word;
+			nuevaPalabra->ant = NULL;
+			nuevaPalabra->sig = NULL;
+			
+			if(posicionPalabra > e->t->l->cantPalabras) {
+				//Si la posición está "vacia" ingreso el nuevo nodo palabra sin necesidad de
+				// correr otras palabras una posición hacía adelante.
+				e->t->l->primera = nuevaPalabra;
+				e->t->l->cantPalabras++;
+			}
+			else {
+				//La posición ya contiene una palabra, por lo que hay que enganchar la nuevaPalabra
+				// en esta posición, y correr las que ya estaban una posición hacia adelante. 
+				cout << "algo\n";
+			}
+			
 		}
 		else {
 			return ERROR;
 		}
-
 		return OK;
 	}
 	else {
 		return ERROR;
 	}
 }
-*/
-TipoRetorno BorrarPalabra(editor &e, Posicion posicionLinea, Posicion posicionPalabra){
-	// Borra la palabra en la posición indicada.
-	// Ver más detalles en la letra del obligatorio.
-	return NO_IMPLEMENTADA;
+
+TipoRetorno BorrarPalabra(editor & e, Posicion posicionLinea, Posicion posicionPalabra){
+	if(e->t->l != NULL){
+		linea auxiliar;
+		auxiliar = e->t->l;
+		Posicion contPosicion = 0, contPosicionPalabra = 0;
+		palabra p = new(nodo_palabra);
+
+		while(contPosicion != posicionLinea){
+			contPosicion++;
+			auxiliar = auxiliar->sig;
+		}
+		p = auxiliar->primera;
+		if(p != NULL){
+			palabra panterior,pauxiliar;
+			panterior = NULL;
+			pauxiliar = p;  // apunta a la primera palabra 
+
+			while(contPosicionPalabra != posicionPalabra){
+				contPosicionPalabra++;
+				panterior = pauxiliar;
+				pauxiliar = pauxiliar->sig;
+			}
+			if(contPosicionPalabra == 0){  	// LA PALABRA A BORRAR ES LA PRIMERA
+				e->t->l->primera = p->sig;
+				delete(p);
+				p = NULL;								// DELA LINEA
+			}
+		else if (pauxiliar->sig == NULL){		// ESTOY EN LA ULTIMA PALABRA
+				delete(p);
+				p = NULL;
+			}
+			else{									//PALABRA EN EL MEDIO
+				panterior->sig = pauxiliar->sig;
+				delete(pauxiliar);
+				pauxiliar = NULL;
+			}
+			return OK;
+		}
+		return ERROR;
+	
+	return ERROR;
+	
+}
 }
 
 TipoRetorno BorrarOcurrenciasPalabraEnLinea(editor &e, Posicion posicionLinea, Cadena palabraABorrar){
@@ -413,19 +423,56 @@ TipoRetorno BorrarOcurrenciasPalabraEnLinea(editor &e, Posicion posicionLinea, C
 	// Ver más detalles en la letra del obligatorio.
 	return NO_IMPLEMENTADA;
 }
-/*
-TipoRetorno ImprimirLinea(editor & e, Posicion posicionLinea){
-// Imprime la línea por pantalla.
-// Ver más detalles en la letra del obligatorio.
-	return NO_IMPLEMENTADA;
+
+TipoRetorno agregar(arbol &d, Cadena palabraAIngresar) {
+
+	arbol nodoD = new(nodo_arbol);
+	Cadena w = new(char[256]);
+	strcpy(w, palabraAIngresar); //Copio el string en la variable que pedí memoria.
+	nodoD->word = w;
+	nodoD->izq = NULL;
+	nodoD->der = NULL;
+
+	if(strcmp(palabraAIngresar, d->word) == 0)
+		return ERROR;
+	else if(strcmp(palabraAIngresar, d->word) > 0) {
+        if (d->der == NULL){
+            d->der = nodoD;
+        }
+        else{
+            agregar(d->der, palabraAIngresar);
+        }
+    }
+    else{
+        if (d->izq == NULL){
+            d->izq = nodoD;
+        }
+        else{
+            agregar(d->izq, palabraAIngresar);
+        }
+    }
+	return OK;
 }
-*/
+
 TipoRetorno IngresarPalabraDiccionario(editor &e, Cadena palabraAIngresar){
 	// Agrega una palabra al diccionario.
 	// Esta operación debe realizarse en a lo sumo O(log n) promedio.
 	// Ver más detalles en la letra del obligatorio.
-	
-	return NO_IMPLEMENTADA;
+
+	if(e->d == NULL){
+		arbol nodoD = new(nodo_arbol);
+		Cadena w = new(char[256]);
+		strcpy(w, palabraAIngresar); //Copio el string en la variable que pedí memoria.
+		nodoD->word = w;
+		nodoD->izq = NULL;
+		nodoD->der = NULL;
+
+		e->d = nodoD;
+		return OK;
+	}
+	else {
+		agregar(e->d, palabraAIngresar);
+	}
 }
 
 TipoRetorno BorrarPalabraDiccionario(editor &e, Cadena palabraABorrar){
@@ -434,11 +481,20 @@ TipoRetorno BorrarPalabraDiccionario(editor &e, Cadena palabraABorrar){
 	return NO_IMPLEMENTADA;
 }
 
-TipoRetorno ImprimirDiccionario(editor &e){
-	// Muestra las palabras del diccionario alfabéticamente.
-	// Esta operación debe realizarse en O(n) peor caso.
-	// Ver más detalles en la letra del obligatorio.
-	return NO_IMPLEMENTADA;
+TipoRetorno ImprimirDiccionario(editor & e){
+	mostrarArbol(e->d);
+	return OK;
+}
+
+TipoRetorno mostrarArbol(arbol d){
+	if(d == NULL){
+		return OK;
+	}
+	else{
+		mostrarArbol(d->izq);
+		cout << d->word << endl;
+		mostrarArbol(d->der);
+	}
 }
 
 TipoRetorno ImprimirTextoIncorrecto(editor &e){
