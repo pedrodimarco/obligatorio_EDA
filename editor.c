@@ -97,23 +97,24 @@ TipoRetorno InsertarLinea(editor &e){
 TipoRetorno BorrarLinea(editor &e, Posicion posicionLinea){
 	// Borra la línea en la posición indicada.
 	if ((posicionLinea >= 1) && (posicionLinea <= e->t->cantLineas)){
-		int cont = 1;
-		// editor aux = CrearEditor();
-		linea auxiliar = CrearLinea();
+		Posicion cont = 1;
+		editor aux = CrearEditor();
+		// linea auxiliar = CrearLinea();
 
 		while (cont != posicionLinea - 1) {
 			cont++;
 			e->t->l = e->t->l->sig;
 		}
 
-		auxiliar = e->t->l->sig;
+		// auxiliar = e->t->l->sig;
+		aux->t->l = e->t->l->sig;
 		// Engancho la linea anterior con la línea siguiente (respecto a la linea a ser borrada)
-		e->t->l->sig = auxiliar->sig;
+		// e->t->l->sig = auxiliar->sig;
+		e->t->l->sig = aux->t->l->sig;
 
-		delete (auxiliar);
+		delete (aux->t->l);
 
 		e->t->cantLineas--;
-
 		return OK;
 	}
 	else {
@@ -131,7 +132,7 @@ TipoRetorno BorrarTodo(editor &e){
 			BorrarLinea(e, cont);
 		}
 		e->t->cantLineas = 0;
-
+		e->t->l = NULL;
 		return OK;
 	}
 }
@@ -226,19 +227,24 @@ TipoRetorno InsertarLineaEnPosicion2(editor &e, Posicion posicionLinea){
 
 TipoRetorno ImprimirLinea(editor &e, Posicion posicionLinea){
 	if(((posicionLinea <= e->t->cantLineas) && (posicionLinea > 0))){
-		Posicion cont = 1;
+		
+		if(e->t->l->cantPalabras == 0)
+			return OK;
+		else { 
+			Posicion cont = 1;
 
-		e->t->l = e->t->primeraLinea;
+			e->t->l = e->t->primeraLinea;
 
-		while(cont != posicionLinea){ //Encuentro la linea correspondiente.
-			cont++;
-			e->t->l = e->t->l->sig;
+			while(cont != posicionLinea){ //Encuentro la linea correspondiente.
+				cont++;
+				e->t->l = e->t->l->sig;
+			}
+			while(e->t->l->primera->sig != NULL){
+				cout << cont << ": " << e->t->l->primera->word << " ";
+				e->t->l->primera = e->t->l->primera->sig;
+			}
+			return OK;
 		}
-		while(e->t->l->primera->sig != NULL){
-			cout << cont << ": " << e->t->l->primera->word << " ";
-			e->t->l->primera = e->t->l->primera->sig;
-		}
-		return OK;
 	}
 	else
 		return ERROR;
